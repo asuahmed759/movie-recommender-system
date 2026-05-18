@@ -5,10 +5,23 @@ import requests
 import gdown
 import os
 
-# Download files from Google Drive if not present
+
 def download_file(file_id, output):
-    url = f"https://drive.google.com/uc?export=download&confirm=t&id={file_id}"
-    gdown.download(url, output, quiet=False, fuzzy=True)
+    import requests
+    session = requests.Session()
+    url = "https://drive.google.com/uc?export=download"
+    response = session.get(url, params={'id': file_id}, stream=True)
+
+    # Handle large file confirmation
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            response = session.get(url, params={'id': file_id, 'confirm': value}, stream=True)
+
+    with open(output, 'wb') as f:
+        for chunk in response.iter_content(32768):
+            if chunk:
+                f.write(chunk)
+
 
 if not os.path.exists('similarity_score.pkl'):
     download_file('1cjGTgdFpZTV_9ppfrIgmG0g82GHY502-', 'similarity_score.pkl')
@@ -18,7 +31,7 @@ if not os.path.exists('movies_dict.pkl'):
 
 if not os.path.exists('movies.pkl'):
     download_file('1mw00AA3jldi-P4EQpjGzwzbxm4FMwyGI', 'movies.pkl')
-
+    
 def fetch_poster(movie_id):
     response = requests.get(
         'https://api.themoviedb.org/3/movie/{}?api_key=f2eb095fc96b7a0ac72308206ddca773&language=en-US'
