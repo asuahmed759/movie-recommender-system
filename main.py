@@ -6,16 +6,18 @@ import gdown
 import os
 
 # Download files from Google Drive if not present
+def download_file(file_id, output):
+    url = f"https://drive.google.com/uc?export=download&confirm=t&id={file_id}"
+    gdown.download(url, output, quiet=False, fuzzy=True)
+
 if not os.path.exists('similarity_score.pkl'):
-    gdown.download('https://drive.google.com/uc?id=1cjGTgdFpZTV_9ppfrIgmG0g82GHY502-', 'similarity_score.pkl', quiet=False)
+    download_file('1cjGTgdFpZTV_9ppfrIgmG0g82GHY502-', 'similarity_score.pkl')
 
 if not os.path.exists('movies_dict.pkl'):
-    gdown.download('https://drive.google.com/uc?id=1rkN0YZs0gVe6b6GepNtvAYk5R9ffbbaN', 'movies_dict.pkl', quiet=False)
+    download_file('1rkN0YZs0gVe6b6GepNtvAYk5R9ffbbaN', 'movies_dict.pkl')
 
 if not os.path.exists('movies.pkl'):
-    gdown.download('https://drive.google.com/uc?id=1mw00AA3jldi-P4EQpjGzwzbxm4FMwyGI', 'movies.pkl', quiet=False)
-
-
+    download_file('1mw00AA3jldi-P4EQpjGzwzbxm4FMwyGI', 'movies.pkl')
 
 def fetch_poster(movie_id):
     response = requests.get(
